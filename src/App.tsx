@@ -1,26 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Container from "@mui/material/Container";
+import { useSelector } from "react-redux";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Box from "@mui/material/Box";
 
-function App() {
+import Footer from "./components/Footer";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import TopNav from "./components/TopNav";
+import useWindowDimentions from "./tools/windowDimentions";
+import { ReduxStoreType } from "./types/reduxTypes.d";
+import ScrollTop from "./tools/ScrollTop";
+import { useEffect } from "react";
+import getReduxUser from "./redux/actions/user";
+
+const App = () => {
+  const { height } = useWindowDimentions();
+
+  const loggedIn = useSelector((state: ReduxStoreType) => state.loggedIn);
+  console.log(loggedIn);
+
+  useEffect(() => void getReduxUser(), []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container
+      disableGutters
+      maxWidth={false}
+      sx={{
+        minHeight: height,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <TopNav />
+      <Box
+        sx={{
+          mt: 8,
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Router>
+          <Routes>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Router>
+      </Box>
+      <Footer />
+      <ScrollTop />
+    </Container>
   );
-}
+};
 
 export default App;
