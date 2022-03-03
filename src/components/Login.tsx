@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
@@ -9,9 +10,14 @@ import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
 
 import loginUser from "../api/post/loginUser";
+import { ReduxStoreType } from "../types/reduxTypes";
+import { setUserAction } from "../redux/actions/user";
 
 const Login = () => {
   const [error, setError] = useState<string | null>(null);
+
+  const user = useSelector((state: ReduxStoreType) => state.user);
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,7 +32,7 @@ const Login = () => {
           identifier,
           password,
         });
-        console.log(res);
+        dispatch(setUserAction(res));
       } catch (error: any) {
         const { text } = JSON.parse(error?.message);
         setError(text);
@@ -35,6 +41,12 @@ const Login = () => {
       setError("Please provide valid credentials");
     }
   };
+
+  useEffect(() => {
+    console.log(user);
+
+    if (user) window.location.href = "/";
+  }, [user]);
 
   return (
     <Container maxWidth="xs">

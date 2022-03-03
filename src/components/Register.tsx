@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
@@ -8,9 +8,15 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import registerUser from "../api/post/registerUser";
 import Alert from "@mui/material/Alert";
+import { useDispatch, useSelector } from "react-redux";
+import { ReduxStoreType } from "../types/reduxTypes";
+import { setUserAction } from "../redux/actions/user";
 
 const Register = () => {
   const [error, setError] = useState<string | null>(null);
+
+  const user = useSelector((state: ReduxStoreType) => state.user);
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,7 +35,7 @@ const Register = () => {
           email,
           password,
         });
-        console.log(res);
+        dispatch(setUserAction(res));
       } catch (error: any) {
         const { text } = JSON.parse(error?.message);
         setError(text);
@@ -38,6 +44,10 @@ const Register = () => {
       setError("Please provide valid data");
     }
   };
+
+  useEffect(() => {
+    if (user) window.location.href = "/";
+  }, [user]);
 
   return (
     <Container maxWidth="xs">

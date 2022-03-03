@@ -8,7 +8,7 @@ const composeThatAlwaysWorks =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const initialState: ReduxStoreType = {
-  loggedIn: true,
+  loggedIn: false,
   user: null,
 };
 

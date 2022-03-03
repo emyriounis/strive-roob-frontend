@@ -1,5 +1,5 @@
 import Container from "@mui/material/Container";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Box from "@mui/material/Box";
 
@@ -10,16 +10,49 @@ import TopNav from "./components/TopNav";
 import useWindowDimentions from "./tools/windowDimentions";
 import { ReduxStoreType } from "./types/reduxTypes.d";
 import ScrollTop from "./tools/ScrollTop";
-import { useEffect } from "react";
-import getReduxUser from "./redux/actions/user";
+import { useEffect, useState } from "react";
+import { setUserAction } from "./redux/actions/user";
+import meUser from "./api/get/meUser";
+import { setLoggedInAction } from "./redux/actions/loggedIn";
+import refreshToken from "./api/post/refreshToken";
+import Loading from "./tools/Loading";
+import Home from "./components/Home";
 
 const App = () => {
   const { height } = useWindowDimentions();
 
-  const loggedIn = useSelector((state: ReduxStoreType) => state.loggedIn);
-  console.log(loggedIn);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => void getReduxUser(), []);
+  const loggedIn = useSelector((state: ReduxStoreType) => state.loggedIn);
+  const user = useSelector((state: ReduxStoreType) => state.user);
+  const dispatch = useDispatch();
+
+  const getUser = async (retry: boolean) => {
+    try {
+      const res = await meUser();
+      if (res) {
+        dispatch(setUserAction(res));
+        dispatch(setLoggedInAction(true));
+      }
+    } catch (error: any) {
+      const { text, status } = JSON.parse(error?.message);
+      console.log(text, status);
+      if (retry) {
+        try {
+          await refreshToken();
+          await getUser(false);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => void getUser(true), []);
+
+  if (loading) return <Loading />;
 
   return (
     <Container
@@ -32,23 +65,24 @@ const App = () => {
         justifyContent: "center",
       }}
     >
-      <TopNav />
-      <Box
-        sx={{
-          mt: 8,
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        <Router>
+      <Router>
+        <TopNav />
+        <Box
+          sx={{
+            mt: 8,
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
           <Routes>
+            <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
           </Routes>
-        </Router>
-      </Box>
+        </Box>
+      </Router>
       <Footer />
       <ScrollTop />
     </Container>
