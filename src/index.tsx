@@ -7,12 +7,15 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "./styles/theme";
 import { Provider } from "react-redux";
 import configureStore from "./redux";
+import { SnackbarProvider } from "notistack";
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={configureStore}>
       <ThemeProvider theme={theme}>
-        <App />
+        <SnackbarProvider maxSnack={1}>
+          <App />
+        </SnackbarProvider>
       </ThemeProvider>
     </Provider>
   </React.StrictMode>,

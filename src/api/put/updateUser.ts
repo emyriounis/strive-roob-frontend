@@ -1,6 +1,7 @@
-const logoutUser = async () => {
-  const response = await fetch(`${process.env.REACT_APP_BE_URL}/users/logout`, {
-    method: "POST",
+const updateUser = async (formData: FormData) => {
+  const response = await fetch(`${process.env.REACT_APP_BE_URL}/users/me`, {
+    method: "PUT",
+    body: formData,
     credentials: "include",
   });
 
@@ -13,4 +14,4 @@ const logoutUser = async () => {
   }
 };
 
-export default logoutUser;
+export default updateUser;

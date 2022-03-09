@@ -24,6 +24,7 @@ import logoutUser from "../api/post/logoutUser";
 import { setUserAction } from "../redux/actions/user";
 import { ReduxStoreType } from "../types/reduxTypes.d";
 import { Link } from "react-router-dom";
+import refreshToken from "../api/post/refreshToken";
 
 const pages = ["Products", "Pricing", "Blog"];
 
@@ -49,13 +50,23 @@ const TopNav = () => {
     setAnchorElUser(null);
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (retry: boolean) => {
     try {
       const res = await logoutUser();
       dispatch(setUserAction(null));
     } catch (error: any) {
       const { text } = JSON.parse(error?.message);
       console.log(text);
+      if (retry) {
+        try {
+          await refreshToken();
+          await handleLogout(false);
+        } catch (error) {
+          window.location.reload();
+        }
+      } else {
+        console.log(error);
+      }
     }
   };
 
@@ -66,19 +77,21 @@ const TopNav = () => {
           <Toolbar disableGutters>
             {user ? (
               <>
-                <Typography
-                  variant="h6"
-                  noWrap
-                  component="div"
-                  sx={{
-                    mr: 2,
-                    display: { xs: "none", md: "flex" },
-                    color: "secondary.light",
-                    fontWeight: 600,
-                  }}
-                >
-                  Roob.
-                </Typography>
+                <Link to="/" style={{ textDecoration: "none" }}>
+                  <Typography
+                    variant="h6"
+                    noWrap
+                    component="div"
+                    sx={{
+                      mr: 2,
+                      display: { xs: "none", md: "flex" },
+                      color: "secondary.light",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Roob.
+                  </Typography>
+                </Link>
 
                 <Box
                   sx={{
@@ -115,6 +128,14 @@ const TopNav = () => {
                       display: { xs: "block", md: "none" },
                     }}
                   >
+                    <Link
+                      to="/"
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <MenuItem key="Home" onClick={handleCloseNavMenu}>
+                        <Typography textAlign="center">Home</Typography>
+                      </MenuItem>
+                    </Link>
                     {pages.map((page) => (
                       <MenuItem key={page} onClick={handleCloseNavMenu}>
                         <Typography textAlign="center">{page}</Typography>
@@ -122,19 +143,22 @@ const TopNav = () => {
                     ))}
                   </Menu>
                 </Box>
-                <Typography
-                  variant="h6"
-                  noWrap
-                  component="div"
-                  sx={{
-                    flexGrow: 1,
-                    display: { xs: "flex", md: "none" },
-                    color: "secondary.light",
-                    fontWeight: 600,
-                  }}
-                >
-                  Roob.
-                </Typography>
+
+                {/* <Link to="/" style={{ textDecoration: "none" }}>
+                  <Typography
+                    variant="h6"
+                    noWrap
+                    component="div"
+                    sx={{
+                      flexGrow: 1,
+                      display: { xs: "flex", md: "none" },
+                      color: "secondary.light",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Roob.
+                  </Typography>
+                </Link> */}
                 <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                   {pages.map((page) => (
                     <Button
@@ -151,8 +175,8 @@ const TopNav = () => {
                   <Tooltip title="Open settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                       <Avatar
-                        alt="Remy Sharp"
-                        src="/static/images/avatar/2.jpg"
+                        alt={user.firstName}
+                        src={user.avatar || "/static/images/avatar/2.jpg"}
                         sx={{
                           color: "primary.main",
                           backgroundColor: "secondary.light",
@@ -203,14 +227,27 @@ const TopNav = () => {
                     onClose={handleCloseUserMenu}
                     onClick={handleCloseUserMenu}
                   >
-                    <MenuItem>
-                      <Avatar /> Profile
-                    </MenuItem>
-                    <MenuItem>
+                    <Link
+                      to="/profile"
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <MenuItem>
+                        <Avatar
+                          alt={user.firstName}
+                          src={user.avatar || "/static/images/avatar/2.jpg"}
+                          sx={{
+                            color: "primary.main",
+                            backgroundColor: "secondary.light",
+                          }}
+                        />
+                        Profile
+                      </MenuItem>
+                    </Link>
+                    {/* <MenuItem>
                       <Avatar /> My account
-                    </MenuItem>
+                    </MenuItem> */}
                     <Divider />
-                    <MenuItem>
+                    {/* <MenuItem>
                       <ListItemIcon>
                         <PersonAdd fontSize="small" />
                       </ListItemIcon>
@@ -221,8 +258,8 @@ const TopNav = () => {
                         <Settings fontSize="small" />
                       </ListItemIcon>
                       Settings
-                    </MenuItem>
-                    <MenuItem onClick={() => handleLogout()}>
+                    </MenuItem> */}
+                    <MenuItem onClick={() => handleLogout(true)}>
                       <ListItemIcon>
                         <Logout fontSize="small" />
                       </ListItemIcon>
@@ -232,10 +269,7 @@ const TopNav = () => {
                 </Box>
               </>
             ) : (
-              <Link
-                to={user ? "/" : "/login"}
-                style={{ textDecoration: "none" }}
-              >
+              <Link to="/login" style={{ textDecoration: "none" }}>
                 <Typography
                   variant="h6"
                   noWrap

@@ -17,6 +17,11 @@ import { setLoggedInAction } from "./redux/actions/loggedIn";
 import refreshToken from "./api/post/refreshToken";
 import Loading from "./tools/Loading";
 import Home from "./components/Home";
+import NotFound from "./components/NotFound";
+import Profile from "./components/Profile";
+import ResetPassword from "./components/ResetPassword";
+import ForgotPassword from "./components/ForgotPassword";
+import ValidateEmail from "./components/ValidateEmail";
 
 const App = () => {
   const { height } = useWindowDimentions();
@@ -74,12 +79,19 @@ const App = () => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <Routes>
-            <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/validateEmail/:token" element={<ValidateEmail />} />
+            <Route path="/forgotPassword" element={<ForgotPassword />} />
+            <Route path="/resetPassword/:token" element={<ResetPassword />} />
+
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
       </Router>
