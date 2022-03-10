@@ -3,4 +3,5 @@ export interface UserType {
   lastName: string;
   email: string;
   avatar?: string;
+  emailVerified: boolean;
 }

@@ -20,6 +20,8 @@ import updateUser from "../api/put/updateUser";
 import { useSnackbar, VariantType } from "notistack";
 import refreshToken from "../api/post/refreshToken";
 import meUser from "../api/delete/meUser";
+import { Alert } from "@mui/material";
+import sendVerificationEmail from "../api/post/sendVerificationEmail";
 
 const Profile = () => {
   const [userInfo, setUserInfo] = useState<UserType | null>(null);
@@ -36,7 +38,7 @@ const Profile = () => {
   const throwNewSnackbar = (variant: VariantType, message: string) =>
     enqueueSnackbar(message, { variant });
 
-  const handleSubmit = async (
+  const saveProfile = async (
     event: React.FormEvent<HTMLFormElement>,
     retry: boolean
   ) => {
@@ -48,10 +50,8 @@ const Profile = () => {
     userInfo && formData.append("lastName", userInfo.lastName);
 
     try {
-      const res = await updateUser(formData);
-      if (res) {
-        throwNewSnackbar("success", "Saved");
-      }
+      await updateUser(formData);
+      throwNewSnackbar("success", "Saved");
     } catch (error) {
       if (retry) {
         try {
@@ -60,6 +60,26 @@ const Profile = () => {
         } catch (error: any) {
           const { text } = JSON.parse(error?.message);
           throwNewSnackbar("error", text || "Failed to save profile");
+        }
+      }
+    }
+  };
+
+  const reqVerificationEmail = async (retry: boolean) => {
+    try {
+      await sendVerificationEmail();
+      throwNewSnackbar("success", "A new verification email has been sent");
+    } catch (error) {
+      if (retry) {
+        try {
+          await refreshToken();
+          await reqVerificationEmail(false);
+        } catch (error: any) {
+          const { text } = JSON.parse(error?.message);
+          throwNewSnackbar(
+            "error",
+            text || "Failed to send verification email"
+          );
         }
       }
     }
@@ -94,6 +114,26 @@ const Profile = () => {
 
   return (
     <Container maxWidth="xs">
+      {user && !user.emailVerified && (
+        <Alert severity="warning" sx={{ mb: 4 }}>
+          <Typography variant="body1">
+            Please verify your email. Check your inbox
+          </Typography>
+          <Box display="flex">
+            <Typography variant="body2">Can't you find it? </Typography>
+            <Typography
+              variant="body2"
+              onClick={() => reqVerificationEmail(true)}
+              sx={{
+                textDecoration: "underline",
+                "&:hover": { cursor: "pointer" },
+              }}
+            >
+              Send new verification email
+            </Typography>
+          </Box>
+        </Alert>
+      )}
       <Box
         sx={{
           display: "flex",
@@ -110,7 +150,7 @@ const Profile = () => {
         <Box
           component="form"
           onSubmit={(event: React.FormEvent<HTMLFormElement>) =>
-            handleSubmit(event, true)
+            saveProfile(event, true)
           }
           sx={{ mt: 3 }}
         >
@@ -124,7 +164,6 @@ const Profile = () => {
                 fullWidth
                 id="firstName"
                 label="First Name"
-                autoFocus
                 value={userInfo?.firstName || ""}
                 onChange={(event) =>
                   userInfo &&
