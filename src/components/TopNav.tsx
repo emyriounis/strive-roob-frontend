@@ -16,8 +16,6 @@ import MenuItem from "@mui/material/MenuItem";
 import HideOnScroll from "../tools/HideOnScroll";
 import { Divider } from "@mui/material";
 import { ListItemIcon } from "@mui/material";
-import { PersonAdd } from "@mui/icons-material";
-import { Settings } from "@mui/icons-material";
 import { Logout } from "@mui/icons-material";
 
 import logoutUser from "../api/post/logoutUser";
@@ -25,8 +23,6 @@ import { setUserAction } from "../redux/actions/user";
 import { ReduxStoreType } from "../types/reduxTypes.d";
 import { Link } from "react-router-dom";
 import refreshToken from "../api/post/refreshToken";
-
-const pages = ["Products", "Pricing", "Blog"];
 
 const TopNav = () => {
   const user = useSelector((state: ReduxStoreType) => state.user);
@@ -136,11 +132,14 @@ const TopNav = () => {
                         <Typography textAlign="center">Home</Typography>
                       </MenuItem>
                     </Link>
-                    {pages.map((page) => (
-                      <MenuItem key={page} onClick={handleCloseNavMenu}>
-                        <Typography textAlign="center">{page}</Typography>
+                    <Link
+                      to="/products"
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <MenuItem key="Products" onClick={handleCloseNavMenu}>
+                        <Typography textAlign="center">Products</Typography>
                       </MenuItem>
-                    ))}
+                    </Link>
                   </Menu>
                 </Box>
 
@@ -160,15 +159,18 @@ const TopNav = () => {
                   </Typography>
                 </Link> */}
                 <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                  {pages.map((page) => (
+                  <Link
+                    to="/products"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
                     <Button
-                      key={page}
+                      key="Products"
                       onClick={handleCloseNavMenu}
                       sx={{ my: 2, color: "white", display: "block" }}
                     >
-                      {page}
+                      Products
                     </Button>
-                  ))}
+                  </Link>
                 </Box>
 
                 <Box sx={{ flexGrow: 0 }}>

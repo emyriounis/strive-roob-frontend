@@ -5,3 +5,12 @@ export interface UserType {
   avatar?: string;
   emailVerified: boolean;
 }
+
+export interface ProductType {
+  product: string;
+  productName: string;
+  price: number;
+  currency: string;
+  recurring: string;
+  archived: boolean;
+}

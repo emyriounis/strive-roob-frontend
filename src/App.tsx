@@ -22,6 +22,7 @@ import Profile from "./components/Profile";
 import ResetPassword from "./components/ResetPassword";
 import ForgotPassword from "./components/ForgotPassword";
 import ValidateEmail from "./components/ValidateEmail";
+import Products from "./components/Products";
 
 const App = () => {
   const { height } = useWindowDimentions();
@@ -91,6 +92,7 @@ const App = () => {
 
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/products" element={<Products />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
