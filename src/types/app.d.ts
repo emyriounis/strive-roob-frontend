@@ -14,3 +14,11 @@ export interface ProductType {
   recurring: string;
   archived: boolean;
 }
+
+export interface CustomerType {
+  customerEmail: string;
+  customerName: string;
+  email: string;
+  description: string;
+  archived: boolean;
+}

@@ -26,36 +26,32 @@ import EditIcon from "@mui/icons-material/Edit";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
-import { ProductType } from "../types/app";
-import currencies from "../tools/currencies";
-import recurring from "../tools/recurring";
+import { CustomerType } from "../types/app";
 import refreshToken from "../api/post/refreshToken";
-import createProduct from "../api/post/createProduct";
-import getProducts from "../api/get/getProducts";
-import updateProduct from "../api/put/updateProduct";
-import archiveProduct from "../api/put/archiveProduct";
+import getCustomers from "../api/get/getCustomers";
+import createCustomer from "../api/post/createCustomer";
+import archiveCustomer from "../api/put/archiveCustomer";
+import updateCustomer from "../api/put/updateCustomer";
 
-const Products = () => {
-  const [openAddProductPopup, setOpenAddProductPopup] = useState(false);
-  const [openEditProductPopup, setOpenEditProductPopup] = useState(false);
+const Customers = () => {
+  const [openAddCustomerPopup, setOpenAddCustomerPopup] = useState(false);
+  const [openEditCustomerPopup, setOpenEditCustomerPopup] = useState(false);
   const [openArchivePopup, setOpenArchivePopup] = useState(false);
-  const [newProduct, setNewProduct] = useState<ProductType>({
-    product: "",
-    productName: "",
-    price: 0,
-    currency: "usd",
-    recurring: "one-time",
+  const [newCustomer, setNewCustomer] = useState<CustomerType>({
+    customerEmail: "",
+    customerName: "",
+    email: "",
+    description: "",
     archived: false,
   });
-  const [editProduct, setEditProduct] = useState<ProductType>({
-    product: "",
-    productName: "",
-    price: 0,
-    currency: "usd",
-    recurring: "one-time",
+  const [editCustomer, setEditCustomer] = useState<CustomerType>({
+    customerEmail: "",
+    customerName: "",
+    email: "",
+    description: "",
     archived: false,
   });
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const [customers, setCustomers] = useState<CustomerType[]>([]);
   const [tab, setTab] = useState("available");
 
   const user = useSelector((state: ReduxStoreType) => state.user);
@@ -64,35 +60,34 @@ const Products = () => {
   const throwNewSnackbar = (variant: VariantType, message: string) =>
     enqueueSnackbar(message, { variant });
 
-  const loadProducts = async (retry: boolean) => {
+  const loadCustomers = async (retry: boolean) => {
     try {
-      const products = await getProducts();
-      setProducts(products);
+      const customers = await getCustomers();
+      setCustomers(customers);
     } catch (error) {
       if (retry) {
         try {
           await refreshToken();
-          await loadProducts(false);
+          await loadCustomers(false);
         } catch (error: any) {
           const { text } = JSON.parse(error?.message);
-          throwNewSnackbar("error", text || "Failed to save profile");
+          throwNewSnackbar("error", text || "Failed to load customers");
         }
       }
     }
   };
 
-  const addProduct = async (retry: boolean) => {
+  const addCustomer = async (retry: boolean) => {
     try {
       throwNewSnackbar("info", "Saving...");
-      const createdProduct: ProductType = await createProduct(newProduct);
-      setProducts([...products, createdProduct]);
-      setOpenAddProductPopup(false);
-      setNewProduct({
-        product: "",
-        productName: "",
-        price: 0,
-        currency: "usd",
-        recurring: "one-time",
+      const createdCustomer: CustomerType = await createCustomer(newCustomer);
+      setCustomers([...customers, createdCustomer]);
+      setOpenAddCustomerPopup(false);
+      setNewCustomer({
+        customerEmail: "",
+        customerName: "",
+        email: "",
+        description: "",
         archived: false,
       });
       throwNewSnackbar("success", "Saved!");
@@ -100,32 +95,33 @@ const Products = () => {
       if (retry) {
         try {
           await refreshToken();
-          await addProduct(false);
+          await addCustomer(false);
         } catch (error: any) {
           const { text } = JSON.parse(error?.message);
-          throwNewSnackbar("error", text || "Failed to save profile");
+          throwNewSnackbar("error", text || "Failed to save customer");
         }
       } else {
-        throwNewSnackbar("error", "Failed to save profile");
+        throwNewSnackbar("error", "Failed to save customer");
       }
     }
   };
 
-  const saveProduct = async (retry: boolean) => {
+  const saveCustomer = async (retry: boolean) => {
     try {
       throwNewSnackbar("info", "Saving...");
-      const updatedProduct: ProductType = await updateProduct(editProduct);
-      setProducts([
-        ...products.filter((pr) => pr.product !== editProduct.product),
-        updatedProduct,
+      const updatedCustomer: CustomerType = await updateCustomer(editCustomer);
+      setCustomers([
+        ...customers.filter(
+          (customer) => customer.customerEmail !== editCustomer.customerEmail
+        ),
+        updatedCustomer,
       ]);
-      setOpenEditProductPopup(false);
-      setEditProduct({
-        product: "",
-        productName: "",
-        price: 0,
-        currency: "usd",
-        recurring: "one-time",
+      setOpenEditCustomerPopup(false);
+      setEditCustomer({
+        customerEmail: "",
+        customerName: "",
+        email: "",
+        description: "",
         archived: false,
       });
       throwNewSnackbar("success", "Saved!");
@@ -133,33 +129,37 @@ const Products = () => {
       if (retry) {
         try {
           await refreshToken();
-          await saveProduct(false);
+          await saveCustomer(false);
         } catch (error: any) {
           const { text } = JSON.parse(error?.message);
-          throwNewSnackbar("error", text || "Failed to update product");
+          throwNewSnackbar("error", text || "Failed to update customer");
         }
       } else {
-        throwNewSnackbar("error", "Failed to update product");
+        throwNewSnackbar("error", "Failed to update customer");
       }
     }
   };
 
-  const handleArchiveProduct = async (retry: boolean, archive: boolean) => {
+  const handleArchiveCustomer = async (retry: boolean, archive: boolean) => {
     try {
       throwNewSnackbar("info", "Saving...");
-      const updatedProduct = await archiveProduct(editProduct.product, archive);
-      setProducts([
-        ...products.filter((pr) => pr.product !== editProduct.product),
-        updatedProduct,
+      const updatedCustomer = await archiveCustomer(
+        editCustomer.customerEmail,
+        archive
+      );
+      setCustomers([
+        ...customers.filter(
+          (customer) => customer.customerEmail !== editCustomer.customerEmail
+        ),
+        updatedCustomer,
       ]);
-      setOpenEditProductPopup(false);
+      setOpenEditCustomerPopup(false);
       setOpenArchivePopup(false);
-      setEditProduct({
-        product: "",
-        productName: "",
-        price: 0,
-        currency: "usd",
-        recurring: "one-time",
+      setEditCustomer({
+        customerEmail: "",
+        customerName: "",
+        email: "",
+        description: "",
         archived: false,
       });
       throwNewSnackbar("success", archive ? "Archived!" : "Made Available!");
@@ -167,13 +167,13 @@ const Products = () => {
       if (retry) {
         try {
           await refreshToken();
-          await handleArchiveProduct(false, archive);
+          await handleArchiveCustomer(false, archive);
         } catch (error: any) {
           const { text } = JSON.parse(error?.message);
-          throwNewSnackbar("error", text || "Failed to archive product");
+          throwNewSnackbar("error", text || "Failed to archive customer");
         }
       } else {
-        throwNewSnackbar("error", "Failed to archive product");
+        throwNewSnackbar("error", "Failed to archive customer");
       }
     }
   };
@@ -182,7 +182,7 @@ const Products = () => {
     if (!user) window.location.href = "/login";
   }, [user]);
 
-  useEffect(() => void loadProducts(true), []);
+  useEffect(() => void loadCustomers(true), []);
 
   return (
     <Container maxWidth="xl">
@@ -217,12 +217,12 @@ const Products = () => {
         >
           <Grid item xs={12} sm="auto" display={{ xs: "grid", sm: "auto" }}>
             <Link
-              href={`${process.env.REACT_APP_BE_URL}/products/CSV`}
+              href={`${process.env.REACT_APP_BE_URL}/customers/CSV`}
               target="_blank"
               underline="none"
             >
               <Button variant="outlined" size="small" sx={{ width: "100%" }}>
-                Export Products
+                Export Customers
               </Button>
             </Link>
           </Grid>
@@ -231,9 +231,9 @@ const Products = () => {
               variant="contained"
               size="small"
               sx={{ color: "secondary.light" }}
-              onClick={() => setOpenAddProductPopup(true)}
+              onClick={() => setOpenAddCustomerPopup(true)}
             >
-              Add Product
+              Add Customer
             </Button>
           </Grid>
         </Grid>
@@ -244,13 +244,10 @@ const Products = () => {
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Price
+                Email
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Currency
-              </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Recurring
+                Description
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
                 Actions
@@ -258,37 +255,30 @@ const Products = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products
-              .filter((product) =>
-                tab === "available" ? !product.archived : product.archived
+            {customers
+              .filter((customer) =>
+                tab === "available" ? !customer.archived : customer.archived
               )
-              .map((product) => (
+              .map((customer) => (
                 <TableRow
-                  key={product.productName}
+                  key={customer.customerEmail}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {product.productName}
+                    {customer.customerName}
                   </TableCell>
-                  <TableCell align="right">{product.price}</TableCell>
+                  <TableCell align="right">{customer.email}</TableCell>
                   <TableCell align="right">
-                    {
-                      currencies.find((cur) => cur.value === product.currency)
-                        ?.label
-                    }
-                  </TableCell>
-                  <TableCell align="right">
-                    {
-                      recurring.find((rec) => rec.value === product.recurring)
-                        ?.label
-                    }
+                    {customer.description.length > 20
+                      ? customer.description.slice(0, 17) + "..."
+                      : customer.description}
                   </TableCell>
                   <TableCell align="right">
                     <Button
                       variant="text"
                       onClick={() => {
-                        setEditProduct({ ...product });
-                        setOpenEditProductPopup(true);
+                        setEditCustomer({ ...customer });
+                        setOpenEditCustomerPopup(true);
                       }}
                     >
                       <EditIcon fontSize="small" />
@@ -300,100 +290,71 @@ const Products = () => {
         </Table>
       </TableContainer>
       <Dialog
-        open={openAddProductPopup}
-        onClose={() => setOpenAddProductPopup(false)}
+        open={openAddCustomerPopup}
+        onClose={() => setOpenAddCustomerPopup(false)}
       >
-        <DialogTitle>Product Information</DialogTitle>
+        <DialogTitle>Customer Information</DialogTitle>
         <DialogContent>
-          {/* <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
-          </DialogContentText> */}
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Product Name"
-            type="name"
+            label="Customer Name"
+            type="text"
             fullWidth
             variant="standard"
-            value={newProduct.productName}
+            value={newCustomer.customerName}
             onChange={(event) =>
-              setNewProduct({ ...newProduct, productName: event.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            id="price"
-            label="Price"
-            type="number"
-            fullWidth
-            variant="standard"
-            value={newProduct.price}
-            onChange={(event) =>
-              setNewProduct({
-                ...newProduct,
-                price: Number(event.target.value),
+              setNewCustomer({
+                ...newCustomer,
+                customerName: event.target.value,
               })
             }
           />
           <TextField
             margin="dense"
-            id="currency"
-            label="Currency"
-            select
+            id="email"
+            label="Email"
+            type="email"
             fullWidth
             variant="standard"
-            SelectProps={{
-              native: true,
-            }}
-            value={newProduct.currency}
+            value={newCustomer.email}
             onChange={(event) =>
-              setNewProduct({
-                ...newProduct,
-                currency: event.target.value,
+              setNewCustomer({
+                ...newCustomer,
+                email: event.target.value,
               })
             }
-          >
-            {currencies.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
+          />
           <TextField
+            autoFocus
             margin="dense"
-            id="recurring"
-            label="Recurring"
-            select
+            id="description"
+            label="Description"
+            type="text"
             fullWidth
+            multiline
+            rows={3}
             variant="standard"
-            SelectProps={{
-              native: true,
-            }}
-            value={newProduct.recurring}
+            value={newCustomer.description}
             onChange={(event) =>
-              setNewProduct({ ...newProduct, recurring: event.target.value })
+              setNewCustomer({
+                ...newCustomer,
+                description: event.target.value,
+              })
             }
-          >
-            {recurring.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
+          />
         </DialogContent>
         <DialogActions>
           <Button
             color="error"
             onClick={() => {
-              setOpenAddProductPopup(false);
-              setNewProduct({
-                product: "",
-                productName: "",
-                price: 0,
-                currency: "usd",
-                recurring: "one-time",
+              setOpenAddCustomerPopup(false);
+              setNewCustomer({
+                customerEmail: "",
+                customerName: "",
+                email: "",
+                description: "",
                 archived: false,
               });
             }}
@@ -403,98 +364,67 @@ const Products = () => {
           <Button
             variant="outlined"
             color="success"
-            onClick={() => addProduct(true)}
+            onClick={() => addCustomer(true)}
           >
             Save
           </Button>
         </DialogActions>
       </Dialog>
       <Dialog
-        open={openEditProductPopup}
-        onClose={() => setOpenEditProductPopup(false)}
+        open={openEditCustomerPopup}
+        onClose={() => setOpenEditCustomerPopup(false)}
       >
-        <DialogTitle>Edit Product Information</DialogTitle>
+        <DialogTitle>Edit Customer Information</DialogTitle>
         <DialogContent>
-          {/* <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
-          </DialogContentText> */}
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Product Name"
-            type="name"
+            label="Customer Name"
+            type="text"
             fullWidth
             variant="standard"
-            value={editProduct.productName}
+            value={editCustomer.customerName}
             onChange={(event) =>
-              setEditProduct({
-                ...editProduct,
-                productName: event.target.value,
+              setEditCustomer({
+                ...editCustomer,
+                customerName: event.target.value,
               })
             }
           />
           <TextField
             margin="dense"
-            id="price"
-            label="Price"
-            type="number"
+            id="email"
+            label="Email"
+            type="email"
             fullWidth
             variant="standard"
-            value={editProduct.price}
+            value={editCustomer.email}
             onChange={(event) =>
-              setEditProduct({
-                ...editProduct,
-                price: Number(event.target.value),
+              setEditCustomer({
+                ...editCustomer,
+                email: event.target.value,
               })
             }
           />
           <TextField
+            autoFocus
             margin="dense"
-            id="currency"
-            label="Currency"
-            select
+            id="description"
+            label="Description"
+            type="text"
             fullWidth
+            multiline
+            rows={3}
             variant="standard"
-            SelectProps={{
-              native: true,
-            }}
-            value={editProduct.currency}
+            value={editCustomer.description}
             onChange={(event) =>
-              setEditProduct({
-                ...editProduct,
-                currency: event.target.value,
+              setEditCustomer({
+                ...editCustomer,
+                description: event.target.value,
               })
             }
-          >
-            {currencies.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
-          <TextField
-            margin="dense"
-            id="recurring"
-            label="Recurring"
-            select
-            fullWidth
-            variant="standard"
-            SelectProps={{
-              native: true,
-            }}
-            value={editProduct.recurring}
-            onChange={(event) =>
-              setEditProduct({ ...editProduct, recurring: event.target.value })
-            }
-          >
-            {recurring.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
+          />
         </DialogContent>
         <Box display="flex" justifyContent="space-between">
           <DialogActions>
@@ -502,25 +432,24 @@ const Products = () => {
               variant="outlined"
               color="error"
               onClick={() =>
-                editProduct.archived
-                  ? handleArchiveProduct(true, false)
+                editCustomer.archived
+                  ? handleArchiveCustomer(true, false)
                   : setOpenArchivePopup(true)
               }
             >
-              {editProduct.archived ? "Make Available" : "Archive"}
+              {editCustomer.archived ? "Make Available" : "Archive"}
             </Button>
           </DialogActions>
           <DialogActions>
             <Button
               color="error"
               onClick={() => {
-                setOpenEditProductPopup(false);
-                setEditProduct({
-                  product: "",
-                  productName: "",
-                  price: 0,
-                  currency: "usd",
-                  recurring: "one-time",
+                setOpenEditCustomerPopup(false);
+                setEditCustomer({
+                  customerEmail: "",
+                  customerName: "",
+                  email: "",
+                  description: "",
                   archived: false,
                 });
               }}
@@ -530,7 +459,7 @@ const Products = () => {
             <Button
               variant="outlined"
               color="success"
-              onClick={() => saveProduct(true)}
+              onClick={() => saveCustomer(true)}
             >
               Save
             </Button>
@@ -543,11 +472,11 @@ const Products = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Archive Product</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Archive Customer</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            By archiving this product, you will not be able to charge your
-            customers with it and all the active subscriptions will be lost.
+            By archiving this customer, you will not be able to charge them and
+            all the active subscriptions will be lost.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -561,7 +490,7 @@ const Products = () => {
           <Button
             variant="outlined"
             color="error"
-            onClick={() => handleArchiveProduct(true, true)}
+            onClick={() => handleArchiveCustomer(true, true)}
           >
             Archive
           </Button>
@@ -571,4 +500,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default Customers;
