@@ -148,6 +148,14 @@ const TopNav = () => {
                         <Typography textAlign="center">Customers</Typography>
                       </MenuItem>
                     </Link>
+                    <Link
+                      to="/invoices"
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <MenuItem key="Invoices" onClick={handleCloseNavMenu}>
+                        <Typography textAlign="center">Invoices</Typography>
+                      </MenuItem>
+                    </Link>
                   </Menu>
                 </Box>
 
@@ -189,6 +197,18 @@ const TopNav = () => {
                       sx={{ my: 2, color: "white", display: "block" }}
                     >
                       Customers
+                    </Button>
+                  </Link>
+                  <Link
+                    to="/invoices"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Button
+                      key="Invoices"
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: "white", display: "block" }}
+                    >
+                      Invoices
                     </Button>
                   </Link>
                 </Box>

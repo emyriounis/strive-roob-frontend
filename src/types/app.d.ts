@@ -22,3 +22,24 @@ export interface CustomerType {
   description: string;
   archived: boolean;
 }
+
+export interface InvoiceType {
+  amount: number;
+  currency: string;
+  createdAt: number;
+  customerEmail: string;
+  customerName: string;
+  dueAt: number;
+  products: {
+    product: string;
+    productName: string;
+    currency: string;
+    price: number;
+    quantity: number;
+    archived: boolean;
+    recurring: string;
+  }[];
+  notes: string;
+  paid: boolean;
+  status: string;
+}
