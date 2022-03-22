@@ -43,3 +43,28 @@ export interface InvoiceType {
   paid: boolean;
   status: string;
 }
+
+export interface SubscriptionType {
+  amount: number;
+  currency: string;
+  createdAt: number;
+  customerEmail: string;
+  customerName: string;
+  startAt: number;
+  freeTrialDays: number;
+  recurringEveryDays: number;
+  nextInvoiceAt: number;
+  endAt: number;
+  products: {
+    product: string;
+    productName: string;
+    currency: string;
+    price: number;
+    quantity: number;
+    archived: boolean;
+    recurring: string;
+  }[];
+  notes: string;
+  status: string;
+  canceled: boolean;
+}

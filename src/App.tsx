@@ -25,6 +25,7 @@ import ValidateEmail from "./components/ValidateEmail";
 import Products from "./components/Products";
 import Customers from "./components/Customers";
 import Invoices from "./components/Invoices";
+import Subscriptions from "./components/Subscriptions";
 
 const App = () => {
   const { height } = useWindowDimentions();
@@ -97,6 +98,7 @@ const App = () => {
             <Route path="/products" element={<Products />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/invoices" element={<Invoices />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
