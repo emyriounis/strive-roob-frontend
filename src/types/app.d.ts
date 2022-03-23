@@ -41,6 +41,7 @@ export interface InvoiceType {
   }[];
   notes: string;
   paid: boolean;
+  paidAt?: number;
   status: string;
 }
 
