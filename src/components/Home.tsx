@@ -45,16 +45,17 @@ const Home = () => {
     try {
       const invoices: InvoiceType[] = await getPaidInvoices();
       setPaidInvoices(
-        invoices.filter(
-          (invoice) =>
-            invoice.paidAt &&
-            invoice.paidAt >
-              Date.parse(
-                new Date(
-                  `${Date().split(" ")[1]} 1, ${Date().split(" ")[3]}`
-                ).toString()
-              )
-        )
+        // invoices.filter(
+        //   (invoice) =>
+        //     invoice.paidAt &&
+        //     invoice.paidAt >
+        //       Date.parse(
+        //         new Date(
+        //           `${Date().split(" ")[1]} 1, ${Date().split(" ")[3]}`
+        //         ).toString()
+        //       )
+        // )
+        invoices.slice(0, 10)
       );
     } catch (error) {
       if (retry) {
@@ -77,11 +78,11 @@ const Home = () => {
     }`;
   };
 
-  useEffect(() => void loadInvoices(true), []);
-
   useEffect(() => {
     if (!user) window.location.href = "/login";
   }, [user]);
+
+  useEffect(() => void loadInvoices(true), []);
 
   return (
     <Grid container rowSpacing={2} p={3}>
@@ -102,7 +103,7 @@ const Home = () => {
               color="primary"
               gutterBottom
             >
-              Today
+              This Month
             </Typography>
             <ResponsiveContainer
               height={height < width ? 0.25 * height : 0.25 * width}
@@ -112,18 +113,22 @@ const Home = () => {
                   .map(function (x, i) {
                     return i + 1;
                   })
-                  .map((day) =>
-                    Date.parse(
+                  .map((day, index) => {
+                    const date = Date.parse(
                       new Date(
-                        `${Date().split(" ")[1]} ${day + 1}, ${
-                          Date().split(" ")[3]
-                        }`
+                        `${Date().split(" ")[1]} ${2}, ${Date().split(" ")[3]}` // 2 <= 1 + day: 1
                       ).toString()
-                    )
-                  )
+                    );
+                    if (index === 0) {
+                      return date;
+                    } else {
+                      return date + index * 86400000;
+                    }
+                  })
                   .map((mill) =>
                     paidInvoices.filter(
-                      (invoice) => invoice.paidAt && invoice.paidAt < mill
+                      (invoice) =>
+                        invoice.paidAt && Number(invoice.paidAt) < mill
                     )
                   )
                   .map((invoices, index) => {
@@ -139,12 +144,6 @@ const Home = () => {
                           : 0,
                     };
                   })}
-                margin={{
-                  top: 16,
-                  right: 16,
-                  bottom: 0,
-                  left: 24,
-                }}
               >
                 <XAxis
                   dataKey="day"
@@ -157,7 +156,7 @@ const Home = () => {
                 >
                   <Label
                     angle={270}
-                    position="left"
+                    position="insideLeft"
                     style={{
                       textAnchor: "middle",
                       fill: theme.palette.text.primary,

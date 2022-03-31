@@ -43,8 +43,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    console.log(user);
-
     if (user) window.location.href = "/";
   }, [user]);
 

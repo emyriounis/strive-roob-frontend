@@ -26,6 +26,7 @@ import Products from "./components/Products";
 import Customers from "./components/Customers";
 import Invoices from "./components/Invoices";
 import Subscriptions from "./components/Subscriptions";
+import PayInvoice from "./components/PayInvoice";
 
 const App = () => {
   const { height } = useWindowDimentions();
@@ -99,6 +100,10 @@ const App = () => {
             <Route path="/customers" element={<Customers />} />
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/subscriptions" element={<Subscriptions />} />
+            <Route
+              path="/payInvoice/:stripeId/:client_secret"
+              element={<PayInvoice />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
