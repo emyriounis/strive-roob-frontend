@@ -1,5 +1,5 @@
 import Container from "@mui/material/Container";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Box from "@mui/material/Box";
 
@@ -8,7 +8,6 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import TopNav from "./components/TopNav";
 import useWindowDimentions from "./tools/windowDimentions";
-import { ReduxStoreType } from "./types/reduxTypes.d";
 import ScrollTop from "./tools/ScrollTop";
 import { useEffect, useState } from "react";
 import { setUserAction } from "./redux/actions/user";
@@ -30,11 +29,7 @@ import PayInvoice from "./components/PayInvoice";
 
 const App = () => {
   const { height } = useWindowDimentions();
-
   const [loading, setLoading] = useState(true);
-
-  const loggedIn = useSelector((state: ReduxStoreType) => state.loggedIn);
-  const user = useSelector((state: ReduxStoreType) => state.user);
   const dispatch = useDispatch();
 
   const getUser = async (retry: boolean) => {

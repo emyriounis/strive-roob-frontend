@@ -13,17 +13,13 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import AddIcon from "@mui/icons-material/Add";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Link from "@mui/material/Link";
-import EditIcon from "@mui/icons-material/Edit";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
@@ -34,6 +30,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Alert from "@mui/material/Alert";
+import Chip from "@mui/material/Chip";
 
 import { InvoiceType, CustomerType, ProductType } from "../types/app";
 import refreshToken from "../api/post/refreshToken";
@@ -42,7 +39,6 @@ import currencies from "../tools/currencies";
 import getProducts from "../api/get/getProducts";
 import getCustomers from "../api/get/getCustomers";
 import createInvoice from "../api/post/createInvoice";
-import { Chip } from "@mui/material";
 
 const Invoices = () => {
   const [openAddInvoicePopup, setOpenAddInvoicePopup] = useState(false);

@@ -48,7 +48,7 @@ const TopNav = () => {
 
   const handleLogout = async (retry: boolean) => {
     try {
-      const res = await logoutUser();
+      await logoutUser();
       dispatch(setUserAction(null));
     } catch (error: any) {
       const { text } = JSON.parse(error?.message);

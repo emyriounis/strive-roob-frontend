@@ -75,6 +75,11 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
           {message}
         </Alert>
       )}
+      {isPaying && (
+        <Box display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      )}
       <form id="payment-form" onSubmit={handleSubmit}>
         {isLoading && (
           <Box>
@@ -126,7 +131,6 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
           </Button>
         )}
       </form>
-      {isPaying && <CircularProgress />}
     </Container>
   );
 };
@@ -136,10 +140,8 @@ const PayInvoice = () => {
 
   const {
     payment_intent,
-    payment_intent_client_secret,
   }: {
     payment_intent: string;
-    payment_intent_client_secret: string;
   } = new Proxy(new URLSearchParams(window.location.search), {
     get: (searchParams, prop) => searchParams.get(prop as string),
   }) as any;
