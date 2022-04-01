@@ -12,7 +12,7 @@ import { Alert, CircularProgress, Container } from "@mui/material";
 import theme from "../styles/theme";
 import paidInvoice from "../api/put/paidInvoice";
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -33,7 +33,7 @@ const CheckoutForm = () => {
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${process.env.REACT_APP_FE_URL}/payInvoice/success`,
+          return_url: `${process.env.REACT_APP_FE_URL}/payInvoice/${stripeId}/success`,
         },
       });
       console.log(error);
@@ -135,7 +135,7 @@ const PayInvoice = () => {
         },
       }}
     >
-      <CheckoutForm />
+      <CheckoutForm stripeId={stripeId as string} />
     </Elements>
   );
 };
