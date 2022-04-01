@@ -8,9 +8,17 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Button from "@mui/material/Button";
-import { Alert, CircularProgress, Container } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Container,
+  Grid,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import theme from "../styles/theme";
 import paidInvoice from "../api/put/paidInvoice";
+import { Box } from "@mui/system";
 
 const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
   const stripe = useStripe();
@@ -18,6 +26,7 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
 
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -28,7 +37,7 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
         return;
       }
 
-      setIsLoading(true);
+      setIsPaying(true);
 
       const { error } = await stripe.confirmPayment({
         elements,
@@ -44,7 +53,7 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
         setMessage("An unexpected error occured.");
       }
 
-      setIsLoading(false);
+      setIsPaying(false);
     } catch (error: any) {
       console.log(error);
 
@@ -53,9 +62,11 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
       } else {
         setMessage("An unexpected error occured.");
       }
-      setIsLoading(false);
+      setIsPaying(false);
     }
   };
+
+  useEffect(() => setIsLoading(true), []);
 
   return (
     <Container maxWidth="sm">
@@ -65,17 +76,57 @@ const CheckoutForm = ({ stripeId }: { stripeId: string }) => {
         </Alert>
       )}
       <form id="payment-form" onSubmit={handleSubmit}>
-        <PaymentElement />
-        <Button
-          variant="contained"
-          disabled={isLoading || !stripe || !elements}
-          type="submit"
-          sx={{ color: "secondary.light", my: 4 }}
-        >
-          <span id="button-text">Pay now</span>
-        </Button>
+        {isLoading && (
+          <Box>
+            <Typography component="div" key="0" variant="h6">
+              <Skeleton variant="text" width="100px" />
+            </Typography>
+            <Typography component="div" key="1" variant="h2">
+              <Skeleton />
+            </Typography>
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <Typography component="div" key="2" variant="h6">
+                  <Skeleton variant="text" width="80px" />
+                </Typography>
+                <Typography component="div" key="3" variant="h2">
+                  <Skeleton />
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography component="div" key="4" variant="h6">
+                  <Skeleton variant="text" width="40px" />
+                </Typography>
+                <Typography component="div" key="5" variant="h2">
+                  <Skeleton />
+                </Typography>
+              </Grid>
+            </Grid>
+            <Typography component="div" key="6" variant="h6">
+              <Skeleton variant="text" width="70px" />
+            </Typography>
+            <Typography component="div" key="7" variant="h2">
+              <Skeleton />
+            </Typography>
+            <Typography component="div" key="8" variant="h1">
+              <Skeleton />
+            </Typography>
+          </Box>
+        )}
+        <PaymentElement onReady={() => isLoading && setIsLoading(false)} />
+        {!isLoading && (
+          <Button
+            variant="contained"
+            fullWidth
+            disabled={isPaying || !stripe || !elements}
+            type="submit"
+            sx={{ color: "secondary.light", my: 4 }}
+          >
+            <span id="button-text">Pay now</span>
+          </Button>
+        )}
       </form>
-      {isLoading && <CircularProgress />}
+      {isPaying && <CircularProgress />}
     </Container>
   );
 };
