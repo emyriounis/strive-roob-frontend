@@ -106,7 +106,7 @@ const Home = () => {
               This Month
             </Typography>
             <ResponsiveContainer
-              height={height < width ? 0.25 * height : 0.25 * width}
+              height={height < width ? 0.25 * height : 0.4 * width}
             >
               <LineChart
                 data={Array.apply(null, Array(Number(Date().split(" ")[2])))
@@ -188,7 +188,7 @@ const Home = () => {
             p={2}
             display="flex"
             flexDirection="column"
-            height={height < width ? 0.25 * height + 39 : 0.25 * width + 39}
+            height={height < width ? 0.25 * height + 39 : 0.4 * width + 39}
             sx={{
               backgroundColor: "primary.100",
               borderRadius: "10px",
@@ -214,6 +214,18 @@ const Home = () => {
               } ${
                 paidInvoices.length > 0
                   ? paidInvoices
+                      .filter(
+                        (invoice) =>
+                          invoice.paidAt &&
+                          Number(invoice.paidAt) >
+                            Date.parse(
+                              new Date(
+                                `${Date().split(" ")[1]} ${1}, ${
+                                  Date().split(" ")[3]
+                                }` // 1 <= 1 + day: 0
+                              ).toString()
+                            )
+                      )
                       .map((invoice) => Number(invoice.amount))
                       .reduce((a, b) => a + b)
                   : 0
@@ -230,70 +242,79 @@ const Home = () => {
           </Box>
         </Grid>
       </Grid>
-      <Grid container item p={2} xs={12}>
-        <Box
-          p={2}
-          display="flex"
-          flexDirection="column"
-          width="100%"
-          sx={{
-            backgroundColor: "primary.100",
-            borderRadius: "10px",
-            boxShadow:
-              "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)",
-          }}
-        >
-          <Typography component="h2" variant="h6" color="primary" gutterBottom>
-            Recent Payments
-          </Typography>{" "}
-          <TableContainer component={Paper} sx={{ my: 2 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    Customer
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    Invoiced At
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    Paid At
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paidInvoices.map((invoice) => (
-                  <TableRow
-                    key={invoice.createdAt}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {`${
-                        currencies.find((cur) => cur.value === invoice.currency)
-                          ?.label
-                      } ${invoice.amount}`}
+      <Grid container item>
+        <Grid item justifyContent="center" xs={12} p={2}>
+          <Box
+            p={2}
+            display="flex"
+            flexDirection="column"
+            sx={{
+              backgroundColor: "primary.100",
+              borderRadius: "10px",
+              boxShadow:
+                "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)",
+            }}
+          >
+            <Typography
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Recent Payments
+            </Typography>{" "}
+            <TableContainer component={Paper} sx={{ my: 2 }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                      Customer
                     </TableCell>
-                    <TableCell align="right">{invoice.customerName}</TableCell>
-                    <TableCell align="right">
-                      {beautyDate(invoice.createdAt, true)}
+                    <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                      Invoiced At
                     </TableCell>
-                    <TableCell align="right">
-                      {invoice.paidAt
-                        ? beautyDate(invoice.paidAt, true)
-                        : "Date not found"}
+                    <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                      Paid At
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ color: "primary.main" }}>
-            <Link to="/invoices" style={{ color: "inherit" }}>
-              View recent invoices
-            </Link>
+                </TableHead>
+                <TableBody>
+                  {paidInvoices.map((invoice) => (
+                    <TableRow
+                      key={invoice.createdAt}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {`${
+                          currencies.find(
+                            (cur) => cur.value === invoice.currency
+                          )?.label
+                        } ${invoice.amount}`}
+                      </TableCell>
+                      <TableCell align="right">
+                        {invoice.customerName}
+                      </TableCell>
+                      <TableCell align="right">
+                        {beautyDate(invoice.createdAt, true)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {invoice.paidAt
+                          ? beautyDate(invoice.paidAt, true)
+                          : "Date not found"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Box sx={{ color: "primary.main" }}>
+              <Link to="/invoices" style={{ color: "inherit" }}>
+                View recent invoices
+              </Link>
+            </Box>
           </Box>
-        </Box>
+        </Grid>
       </Grid>
     </Grid>
   );

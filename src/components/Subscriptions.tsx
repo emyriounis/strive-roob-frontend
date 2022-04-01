@@ -45,6 +45,7 @@ import getCustomers from "../api/get/getCustomers";
 import createSubscription from "../api/post/createSubscription";
 import getSubscriptions from "../api/get/getSubscriptions";
 import updateSubscription from "../api/put/updateSubscription";
+import { Chip } from "@mui/material";
 // import createSubscription from "../api/post/createSubscription";
 
 const Subscriptions = () => {
@@ -455,9 +456,7 @@ const Subscriptions = () => {
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Status
-              </TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
                 Customer
               </TableCell>
@@ -500,7 +499,24 @@ const Subscriptions = () => {
                       )?.label
                     } ${subscription.amount}`}
                   </TableCell>
-                  <TableCell align="right">{subscription.status}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={subscription.status}
+                      variant="outlined"
+                      size="small"
+                      color={
+                        subscription.status === "Current"
+                          ? "success"
+                          : subscription.status === "Scheduled"
+                          ? "info"
+                          : subscription.status === "Canceled"
+                          ? "warning"
+                          : subscription.status === "Completed"
+                          ? "secondary"
+                          : "default"
+                      }
+                    />
+                  </TableCell>
                   <TableCell align="right">
                     {subscription.customerName}
                   </TableCell>

@@ -42,6 +42,7 @@ import currencies from "../tools/currencies";
 import getProducts from "../api/get/getProducts";
 import getCustomers from "../api/get/getCustomers";
 import createInvoice from "../api/post/createInvoice";
+import { Chip } from "@mui/material";
 
 const Invoices = () => {
   const [openAddInvoicePopup, setOpenAddInvoicePopup] = useState(false);
@@ -286,9 +287,7 @@ const Invoices = () => {
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
               {tab === "all" && (
-                <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                  Status
-                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
               )}
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
                 Customer
@@ -332,11 +331,28 @@ const Invoices = () => {
                     } ${invoice.amount}`}
                   </TableCell>
                   {tab === "all" && (
-                    <TableCell align="right">{invoice.status}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={invoice.status}
+                        variant="outlined"
+                        size="small"
+                        color={
+                          invoice.status === "Outstanding"
+                            ? "info"
+                            : invoice.status === "Past Due"
+                            ? "error"
+                            : invoice.status === "Paid"
+                            ? "success"
+                            : "default"
+                        }
+                      />
+                    </TableCell>
                   )}
                   <TableCell align="right">{invoice.customerName}</TableCell>
                   <TableCell align="right">
-                    {beautyDate(invoice.dueAt, true)}
+                    {Boolean(Number(invoice.dueAt))
+                      ? beautyDate(invoice.dueAt, true)
+                      : "No Due Date"}
                   </TableCell>
                   <TableCell align="right">
                     {beautyDate(invoice.createdAt, false)}
